@@ -95,17 +95,20 @@ private:
 	std::vector<float> probability; //The distributional probability of the f set
 	std::vector<Content*> leaf_nodes;//Content may also contain leaf nodes, which can have varying probability. This is our A-set.
 	std::vector<int> selection;//This is our determined selection. It starts filled at -1
-	bool deep_copy; //This describe how we compare and contrast the vertex
+
+	//This describe how we compare and contrast the vertex
+	bool deep_copy; //
+	bool unique;
 
 	external_func external;//This function describes how likely it is that the given Content is inside the motif
 	internal_func internal;//This function describes how likely it is that the given configuration represents the content
 	selector_func selector;//This function provides us with a selector
 public:
-	Content(Vertex*,bool); //Our basic creation
-	Content(const std::string& name) :deep_copy(true),vertex(new Vertex(name)),external(uniformExtern),internal(uniformIntern),selector(randomSelection){}//If we are receiving just a content string, it's obvs a deep copy
+	Content(Vertex*,bool deep_copy,bool unique = false); //Our basic creation
+	Content(const std::string& name) :deep_copy(true),unique(false),vertex(new Vertex(name)),external(uniformExtern),internal(uniformIntern),selector(randomSelection){}//If we are receiving just a content string, it's obvs a deep copy
 	~Content(); //Our destructor. Cleans based on deep_copy (very important variable)
 	Content(const Content&); //Copy constructor that is a straight copy
-	Content(const Content&, bool);//When we need to switch our DCS
+	Content(const Content&, bool deep_copy,bool unique = false);//When we need to switch our DCS
 
 	//Our addition functions perform our constraints on the distributions
 	//These are also our update functions
@@ -149,6 +152,9 @@ public:
 	//Finally, we perform our equality comparison operators
 	bool operator ==(const Content &rhs) const; //Equivalance based on vertex name (exact), 
 	bool operator!= (const Content &rhs) const { return !(*this == rhs); }//Oppisite of equals
+
+	//This changes our uniqueness (we only care about uniqueness on our equality, so we don't need to grab it
+	bool setUnique(bool value) { this->unique = value; }
 	
 };
 

@@ -297,7 +297,7 @@ int Operational::getNumRoles(int pos) const{
 }
 ///////////////////////////////////////////////////////////////////////////////
 //Our content Classes
-Content::Content(Vertex* v, bool dcs):deep_copy(dcs), external(uniformExtern), internal(uniformIntern), selector(randomSelection) {
+Content::Content(Vertex* v, bool dcs,bool uni):deep_copy(dcs), unique(uni),external(uniformExtern), internal(uniformIntern), selector(randomSelection) {
 	if (this->deep_copy) {
 		this->vertex = new Vertex(v->getName());
 	}
@@ -317,7 +317,7 @@ Content::~Content() {
 	}
 	this->leaf_nodes.clear();//Clear out the space for good measure
 }
-Content::Content(const Content& rhs):deep_copy(rhs.deep_copy) { //This is technically the same as below. It's redundency may not be needed
+Content::Content(const Content& rhs):deep_copy(rhs.deep_copy),unique(rhs.unique) { //This is technically the same as below. It's redundency may not be needed
 	if (this->deep_copy) {
 		this->vertex = new Vertex(rhs.getVertex()->getName());
 	}
@@ -342,7 +342,7 @@ Content::Content(const Content& rhs):deep_copy(rhs.deep_copy) { //This is techni
 	this->external = rhs.external;
 	this->selector = rhs.selector;
 }
-Content::Content(const Content& rhs, bool dcs):deep_copy(dcs) {
+Content::Content(const Content& rhs, bool dcs,bool unique):deep_copy(dcs),unique(unique) {
 	if (this->deep_copy) {
 		this->vertex = new Vertex(rhs.getVertex()->getName());
 	}
@@ -563,7 +563,9 @@ bool Content::hasVertex(Vertex* v) const {//Determines if we have the vertex, wh
 //Because of how we treat parent/child relations, we also check to see if one is the
 //parent of the other (we also be reflexive
 bool Content::operator ==(const Content &rhs)const { 
-	
+	if (this->unique || rhs.unique) {
+		return false; //Can't be equal if they are considered unique (ever)
+	}
 	return this->hasVertex(rhs.getVertex()) || rhs.hasVertex(this->getVertex()); //If we cannot make a connection, then they aren't equal
 }
 
