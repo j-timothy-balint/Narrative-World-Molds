@@ -1,0 +1,14 @@
+
+*.sql
+FactorGraph/sqlite3.c
+FactorGraph/sqlite3.h
+*.db
+*.txt
+*.vcxproj
+*.filters
+*.user
+**/heist
+**/princess
+*/x64
+graph_connections.txt
+narrative_table.txt
