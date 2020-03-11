@@ -153,8 +153,9 @@ public:
 	bool operator ==(const Content &rhs) const; //Equivalance based on vertex name (exact), 
 	bool operator!= (const Content &rhs) const { return !(*this == rhs); }//Oppisite of equals
 
-	//This changes our uniqueness (we only care about uniqueness on our equality, so we don't need to grab it
-	bool setUnique(bool value) { this->unique = value; }
+	//Getters and setters for uniqueness
+	void setUnique(bool value) { this->unique = value; }
+	bool getUnique() { return this->unique; }
 	
 };
 

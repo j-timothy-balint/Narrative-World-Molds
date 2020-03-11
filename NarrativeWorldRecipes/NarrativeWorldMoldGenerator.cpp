@@ -483,9 +483,13 @@ RuleSet* NarrativeWorldMoldGenerator::buildConnections(int loc_id, RuleSet* diff
 							//Then, we see if we get back with dijstra
 							RuleSet* addition = Dijstra(motif, intersection, pos, diff->getContent(i)); //Same set, so should be fine, but also considers parents
 							if (addition != NULL) {
+								//Before entering, we have to set the new content to be the same uniqueness as the old content
+								addition->getContent(diff->getContent(i)->getVertex())->setUnique(diff->getContent(i)->getUnique());
 								RuleSet new_set  =(*result) + (*addition);
 								delete result;
 								result = new RuleSet(new_set,false);
+								//Now, we make sure to set our uniqueness away, because we have the unique item already inset in the rule-set
+								diff->getContent(i)->setUnique(false);
 							}
 							delete addition;
 						}
@@ -792,6 +796,12 @@ RuleSet* NarrativeWorldMoldGenerator::genSuperSetLocation(int loc_id, RuleSet* s
 	//With the intersection
 	//The intersection tells us which objects we should be re-using and replacing
 		if (diff.getNumVertices() > 0 && with_addition) {
+			//We set the uniqueness of our super-set here simply because here is the only place where we want to make sure
+			//that each item is being treated differently (so we will the same item multiple times if the story asks for it)
+			for (int i = 0; i < diff.getNumVertices(); i++) {
+				Content* c = diff.getContent(i);
+				c->setUnique(true);
+			}
 			RuleSet* res = buildConnections(loc_id, &diff, result);
 			delete result;
 			result = res;
