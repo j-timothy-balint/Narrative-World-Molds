@@ -7,7 +7,12 @@ bool GraphComplete::pathBFS() {
 	std::queue<Vertex*> queue;
 	this->initNodeList();
 	bool found = false;
-	int final = this->graph->getVertexPos(this->finish);
+	int* final_nodes = new int(this->finish.size());
+	std::list<Vertex*>::const_iterator it = this->finish.begin();
+	for (unsigned int i = 0; i < this->finish.size(); i++) {
+		final_nodes[i] = this->graph->getVertexPos((*it));
+		it++;
+	}
 	//Start and end come from the factorgraph, so we can just use them
 	queue.push(this->start);
 	//Of course there isn't really a position, but we have a vector, so we use that
@@ -16,10 +21,12 @@ bool GraphComplete::pathBFS() {
 		int pos = this->graph->getVertexPos(cur);
 		if (!nodes[pos]) { //if we haven't seen it, we need to process it
 			nodes[pos] = true;
-			if (pos == final) {
-				found = true;
+			for (unsigned int i = 0; i < this->finish.size(); i++) {
+				if (pos == final_nodes[i]) {
+					found = true;
+				}
 			}
-			else {
+			if(!found){
 				//This will add the same edges multiple times, which is okay because we have our check
 				std::multimap<int, Vertex*> edges;
 				edges = cur->getEdges();
@@ -32,6 +39,7 @@ bool GraphComplete::pathBFS() {
 	}
 	//Finally, we need to clean up our mess
 	delete[] nodes;
+	delete[] final_nodes;
 	while (!queue.empty()) {
 		queue.pop();
 	}
@@ -39,21 +47,26 @@ bool GraphComplete::pathBFS() {
 }
 
 //Performs a probab
-bool GraphComplete::pDFSGenerate(int pos) {
-	if (pos == this->graph->getVertexPos(this->finish)) {
+bool GraphComplete::pDFSGenerate(int pos,int* final_nodes) {
+	bool found = false;
+	for (unsigned int i = 0; i < this->finish.size(); i++) {
+		if (pos == final_nodes[i]) {
+			found = true;
+		}
+	}
+	if (found) {
 		return true;
 	}
 	if (this->nodes[pos]) { //already been here, so it's no use
 		return false;
 	}
 	this->nodes[pos] = true; //Mark that we have seen this one
-	bool found = false;
 	std::multimap<int, Vertex*> edges;
 	edges = graph->getContent(pos)->getVertex()->getEdges();
 	for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
 		if (this->selected(graph->getContent((*edge).second)->calculateExternal())) { //Here is the probabalistic part. Right Now we will just do the nodes
 			
-			found = found || this->pDFSGenerate(graph->getVertexPos((*edge).second));
+			found = found || this->pDFSGenerate(graph->getVertexPos((*edge).second),final_nodes);
 		}
 	}
 	return found;
@@ -76,14 +89,24 @@ RuleSet* GraphComplete::completeGraph(Vertex* begin, Vertex* end) {
 	//First, we set the beginning and ending vertices
 	if (this->graph == NULL) return NULL;
 	this->start  = this->graph->getVertex(begin->getName());
-	this->finish = this->graph->getVertex(end->getName());
+	if (!this->finish.empty()) {
+		this->finish.clear();
+	}
+	this->finish.push_back(this->graph->getVertex(end->getName()));
 	if (!this->pathBFS()) {
 		this->start = NULL; //Our cleanup
-		this->finish = NULL;
+		this->finish.clear();
 		return NULL;
 	}
 	this->initNodeList();
-	this->pDFSGenerate(this->graph->getVertexPos(this->start));
+	int* final_nodes = new int(this->finish.size());
+	std::list<Vertex*>::const_iterator it = this->finish.begin();
+	for (unsigned int i = 0; i < this->finish.size(); i++) {
+		final_nodes[i] = this->graph->getVertexPos((*it));
+		it++;
+	}
+	this->pDFSGenerate(this->graph->getVertexPos(this->start), final_nodes);
+	delete final_nodes;
 	//Now, we collect all the rules
 	RuleSet* out = new RuleSet(*(this->set));
 	for (int i = 0; i < this->graph->getNumVertices(); i++) {
@@ -96,7 +119,53 @@ RuleSet* GraphComplete::completeGraph(Vertex* begin, Vertex* end) {
 	//clean up
 	delete[] nodes;
 	this->start = NULL;
-	this->finish = NULL;
+	this->finish.clear();
+
+	return out;
+}
+
+//This is our function that creates a probabalistic sub - graph based on our motif
+//Vertex begin and end are most likely not from our factorgraph, but from the rule-set we 
+//converted into a factor-graph. This is an overloaded function that takes
+//in a list of vertices, where any of them can be the end
+RuleSet * GraphComplete::completeGraph(Vertex * begin, const std::list<Vertex*>& end) {
+	//First, we set the beginning and ending vertices
+	if (this->graph == NULL) return NULL;
+	this->start = this->graph->getVertex(begin->getName());
+	if (!this->finish.empty()) {
+		this->finish.clear();
+	}
+	for (std::list<Vertex*>::const_iterator it = end.begin(); it != end.end(); it++) {
+		//Because we have two different factor graphs, we have to do the conversion
+		this->finish.push_back(this->graph->getVertex((*it)->getName()));
+	}
+	if (!this->pathBFS()) {
+		this->start = NULL; //Our cleanup
+		this->finish.clear();
+		return NULL;
+	}
+	this->initNodeList();
+	int* final_nodes = new int(this->finish.size());
+	std::list<Vertex*>::const_iterator it = this->finish.begin();
+	for (unsigned int i = 0; i < this->finish.size(); i++) {
+		final_nodes[i] = this->graph->getVertexPos((*it));
+		it++;
+	}
+	this->pDFSGenerate(this->graph->getVertexPos(this->start), final_nodes);
+	delete final_nodes;
+	//Now, we collect all the rules
+	RuleSet* out = new RuleSet(*(this->set));
+	for (int i = 0; i < this->graph->getNumVertices(); i++) {
+		if (!this->nodes[i]) { //Add the vertices
+			out->updateFrequency(i, 0.0);
+		}
+	}
+	this->ChooseXORProbabilities(out);
+	out->cleanRuleSetProb(true);
+	//clean up
+	delete[] nodes;
+	this->start = NULL;
+	this->finish.clear();
 
 	return out;
 }
