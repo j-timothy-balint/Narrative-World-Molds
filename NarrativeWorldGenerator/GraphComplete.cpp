@@ -170,6 +170,21 @@ RuleSet * GraphComplete::completeGraph(Vertex * begin, const std::list<Vertex*>&
 	return out;
 }
 
+RuleSet* GraphComplete::completeGraph(const std::list<Vertex*>& begin, const std::list<Vertex*>& end) {
+	RuleSet *result = new RuleSet();
+	for (std::list<Vertex*>::const_iterator it = begin.begin(); it != begin.end(); it++) {
+		RuleSet new_set = (*result) + this->completeGraph((*it), end);
+		delete result;
+		result = new RuleSet(new_set);
+	}
+	return result;
+}
+RuleSet* GraphComplete::completeGraph(const std::list<Vertex*>& begin, Vertex* end) {
+	std::list<Vertex*> end_list;
+	end_list.push_back(end);
+	return this->completeGraph(begin, end_list);
+}
+
 RuleSet* GraphComplete::convertRuleSetNoExpand(RuleSet* set,bool cleanup) {
 	RuleSet new_set = *set;
 	if (cleanup)
