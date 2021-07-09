@@ -24,6 +24,8 @@ public:
 
 	RuleSet* completeGraph(Vertex*, Vertex*); //This does our generation
 	RuleSet* completeGraph(Vertex*, const std::list<Vertex*>&);//Generates where it reaches one of any of the vertices
+	RuleSet* completeGraph(const std::list<Vertex*>&, Vertex*); //Generates a series of rule-sets and then concatenates them together
+	RuleSet* completeGraph(const std::list<Vertex*>&, const std::list<Vertex*>&);//Generates a series of rule-sets where any of the vertices work, and concatinates them together.
 	void ChooseXORProbabilities(RuleSet* set); //Kermani will keep XOR probabilities, so we must remove them from play so that it doesn't
 	RuleSet* convertRuleSetNoExpand(RuleSet* set, bool cleanup = true);
 };
