@@ -300,7 +300,8 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	//myfile << saveout;
 	//myfile.close(); 
 	if (with_addition && with_temporial && with_cleanup) {
-		narrativeWorldDifferenceTest("C:\\Users\\jbalint\\Documents\\Workspace\\Narrative World\\NarrativeWorldMoldTest\\heist\\Full\\", recipe, gen,db,with_cleanup);
+		narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\SceneSeer\\", recipe, gen, db, with_cleanup);
 	}
 	else if (!with_addition) {
 		narrativeWorldDifferenceTest("C:\\Users\\jbalint\\Documents\\Workspace\\Narrative World\\NarrativeWorldMoldTest\\heist\\No Add\\", recipe, gen, db, with_cleanup);
@@ -402,10 +403,10 @@ int main() {
 	results.close();*/
 	std::cout << "Full" << std::endl;
 	NarrativeWorldMoldTest(db);
-	std::cout << "No Additional Structure" << std::endl;
-	NarrativeWorldMoldTest(db,false);
-	std::cout << "No Additional Time" << std::endl;
-	NarrativeWorldMoldTest(db, true, false);
+	//std::cout << "No Additional Structure" << std::endl;
+	//NarrativeWorldMoldTest(db,false);
+	//std::cout << "No Additional Time" << std::endl;
+	//NarrativeWorldMoldTest(db, true, false);
 	/*std::cout << "No Removal of items" << std::endl;
 	
 	NarrativeWorldMoldTest(db, true, true,false);
