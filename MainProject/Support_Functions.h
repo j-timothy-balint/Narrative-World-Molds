@@ -676,6 +676,11 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 	RuleSet* time_con;
 	for (int j = 0; j < recipe->getNumLocations(); j++) {
 		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
+		std::list<Vertex*> narrative_objects;
+		RuleSet *n_objects = recipe->getShadowSuperSet(j);
+		for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
+			narrative_objects.push_back(n_objects->getVertex(i));
+		}
 		int total_failures = 0;
 		int total_counts = 0;
 		for (int i = 0; i <2; i++) {
@@ -687,7 +692,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 					int fail_counter = 0;
 					if (time_con->getNumRules() > 0) {
 						while (fin == NULL && fail_counter < 100) {
-							fin = graph->completeGraph(time_con->getVertex(rand() % time_con->getNumVertices()), time_con->getVertex(rand() % time_con->getNumVertices()));
+							fin = graph->completeGraph(narrative_objects, time_con->getVertex(rand() % time_con->getNumVertices()));
 							fail_counter += 1;
 							total_counts++;
 						}
