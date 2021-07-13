@@ -679,8 +679,13 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 		std::list<Vertex*> narrative_objects;
 		std::list<Vertex*> end_objects;
 		RuleSet *n_objects = recipe->getShadowSuperSet(j);
-		for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
-			narrative_objects.push_back(n_objects->getVertex(i));
+		if (n_objects == NULL) {
+			narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
+		}
+		else{
+			for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
+				narrative_objects.push_back(n_objects->getVertex(i));
+			}
 		}
 		end_objects.push_back(time_con->getVertex(time_con->getVertex("Wall")));
 		end_objects.push_back(time_con->getVertex(time_con->getVertex("Floor")));
@@ -722,6 +727,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			}
 		}
 		std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 50 locations" << std::endl;
+		delete n_objects; //Shadow set creates a new ruleset, so in the end we have to delete it
 	}
 }
 
