@@ -35,6 +35,7 @@ public:
 	bool    removeEdge(Vertex *edge, bool outbound = true, int key = -1);
 
 	const std::multimap<int, Vertex*>& getEdges() {return this->out_edges;} //Returns the out edges, which are a multi-map (so that we can have different factors connected to our multi-map)
+	const std::vector<Vertex*> getInEdges() { return this->in_edges; }
 
 	//Complete Vertex Comparison
 	bool operator ==(const Vertex &rhs) const;

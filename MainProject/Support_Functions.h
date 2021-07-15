@@ -700,7 +700,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 				int total_counts = 0;
 				for (int i = 0; i < 2; i++) {
 					if (time_con != NULL) {
-						graph = new GraphComplete(time_con);
+						graph = new GraphComplete(time_con,true);
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
 						for (int k = 0; k < 5; k++) {
 							RuleSet* fin = NULL;

@@ -28,10 +28,18 @@ bool GraphComplete::pathBFS() {
 			}
 			if(!found){
 				//This will add the same edges multiple times, which is okay because we have our check
-				std::multimap<int, Vertex*> edges;
-				edges = cur->getEdges();
-				for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end(); edge++) {
-					queue.push((*edge).second);
+				if (this->backwards) {
+					std::vector<Vertex*> edges;
+					edges = cur->getInEdges();
+					for (std::vector<Vertex*>::const_iterator edge = edges.begin(); edge != edges.end(); edge++) {
+						queue.push((*edge));
+					}
+				}else{
+					std::multimap<int, Vertex*> edges;
+					edges = cur->getEdges();
+					for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end(); edge++) {
+						queue.push((*edge).second);
+					}
 				}
 			}
 		}
@@ -61,12 +69,23 @@ bool GraphComplete::pDFSGenerate(int pos,int* final_nodes) {
 		return false;
 	}
 	this->nodes[pos] = true; //Mark that we have seen this one
-	std::multimap<int, Vertex*> edges;
-	edges = graph->getContent(pos)->getVertex()->getEdges();
-	for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
-		if (this->selected(graph->getContent((*edge).second)->calculateExternal())) { //Here is the probabalistic part. Right Now we will just do the nodes
-			
-			found = found || this->pDFSGenerate(graph->getVertexPos((*edge).second),final_nodes);
+	if (this->backwards) {
+		std::vector<Vertex*> edges;
+		edges = graph->getContent(pos)->getVertex()->getInEdges();
+		for (std::vector<Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
+			if (this->selected(graph->getContent((*edge))->calculateExternal())) { //Here is the probabalistic part. Right Now we will just do the nodes
+
+				found = found || this->pDFSGenerate(graph->getVertexPos((*edge)), final_nodes);
+			}
+		}
+	}else{
+		std::multimap<int, Vertex*> edges;
+		edges = graph->getContent(pos)->getVertex()->getEdges();
+		for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
+			if (this->selected(graph->getContent((*edge).second)->calculateExternal())) { //Here is the probabalistic part. Right Now we will just do the nodes
+
+				found = found || this->pDFSGenerate(graph->getVertexPos((*edge).second), final_nodes);
+			}
 		}
 	}
 	return found;
