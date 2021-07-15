@@ -69,7 +69,6 @@ RuleSet* createRuleSet(const std::string &name, Database* db) {
 }
 
 
-
 std::multimap<std::string, std::string> getAdjectives(const std::string& file_name, int cutoff_value) {
 	std::multimap<std::string, std::string> results;
 	std::ifstream myfile;
@@ -675,59 +674,69 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
 	for (int j = 0; j < recipe->getNumLocations(); j++) {
-		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
-		std::list<Vertex*> narrative_objects;
-		std::list<Vertex*> end_objects;
-		RuleSet *n_objects = recipe->getShadowSuperSet(j);
-		if (n_objects == NULL) {
-			narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
-		}
-		else{
-			for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
-				narrative_objects.push_back(n_objects->getVertex(i));
+			time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
+			std::list<Vertex*> narrative_objects;
+			std::list<Vertex*> end_objects;
+			RuleSet* n_objects = recipe->getShadowSuperSet(j);
+			if (n_objects == NULL) {
+				narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
 			}
-		}
-		end_objects.push_back(time_con->getVertex(time_con->getVertex("Wall")));
-		end_objects.push_back(time_con->getVertex(time_con->getVertex("Floor")));
-		int total_failures = 0;
-		int total_counts = 0;
-		for (int i = 0; i <2; i++) {
-			if (time_con != NULL) {
-				graph = new GraphComplete(time_con);
+			else {
+				for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
+					narrative_objects.push_back(n_objects->getVertex(i));
+				}
+			}
+			if (time_con->getVertex("wall") != -1) {
+				end_objects.push_back(time_con->getVertex(time_con->getVertex("wall")));
+			}
+			if (time_con->getVertex("floor") != -1) {
+				end_objects.push_back(time_con->getVertex(time_con->getVertex("floor")));
+			}
+			if (time_con->getVertex("room") != -1) {
+				end_objects.push_back(time_con->getVertex(time_con->getVertex("room")));
+			}
+			if (end_objects.size() != 0) {
+				int total_failures = 0;
+				int total_counts = 0;
+				for (int i = 0; i < 2; i++) {
+					if (time_con != NULL) {
+						graph = new GraphComplete(time_con);
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
-				for (int k = 0; k < 5; k++) {
-					RuleSet *fin = NULL;
-					int fail_counter = 0;
-					if (time_con->getNumRules() > 0) {
-						while (fin == NULL && fail_counter < 100) {
-							fin = graph->completeGraph(narrative_objects,end_objects);
-							fail_counter += 1;
-							total_counts++;
+						for (int k = 0; k < 5; k++) {
+							RuleSet* fin = NULL;
+							int fail_counter = 0;
+							if (time_con->getNumRules() > 0) {
+								while (fin == NULL && fail_counter < 100) {
+									fin = graph->completeGraph(narrative_objects, end_objects);
+									fail_counter += 1;
+									total_counts++;
+								}
+							}
+							else {
+								fin = new RuleSet(*time_con); //Yeah, if we have no rules Kermani breaks down
+							}
+							if (fin != NULL) {
+								saveout = convertToJson(fin);
+								sprintf_s(path_files, 500, "%s\\%s_%d.json", path.c_str(), recipe->getLocation(j).c_str(), i * 5 + k);
+								std::cout << path_files << std::endl;
+								myfile.open(path_files);
+								myfile << saveout;
+								myfile.close();
+								saveout.clear();
+								delete fin;
+							}
+							else {
+								std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
+								total_failures++; //Turns out the last one did fail
+							}
+							total_failures += fail_counter - 1;
 						}
-					}
-					else {
-						fin = new RuleSet(*time_con); //Yeah, if we have no rules Kermani breaks down
-					}
-					if (fin != NULL) {
-						saveout = convertToJson(fin);
-						sprintf_s(path_files, 500, "%s\\%s_%d.json", path.c_str(), recipe->getLocation(j).c_str(), i * 5 + k);
-						std::cout << path_files << std::endl;
-						myfile.open(path_files);
-						myfile << saveout;
-						myfile.close();
-						saveout.clear();
-						delete fin;
-					}
-					else {
-						std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
-						total_failures++; //Turns out the last one did fail
+						delete graph;
 					}
 				}
-				delete graph;
+				std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 10 locations" << std::endl;
+				delete n_objects; //Shadow set creates a new ruleset, so in the end we have to delete it
 			}
-		}
-		std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 50 locations" << std::endl;
-		delete n_objects; //Shadow set creates a new ruleset, so in the end we have to delete it
 	}
 }
 

@@ -300,7 +300,7 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	//myfile << saveout;
 	//myfile.close(); 
 	if (with_addition && with_temporial && with_cleanup) {
-		narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
+		//narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
 		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\SceneSeer\\", recipe, gen, db, with_cleanup);
 	}
 	else if (!with_addition) {

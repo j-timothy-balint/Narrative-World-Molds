@@ -7,7 +7,7 @@ bool GraphComplete::pathBFS() {
 	std::queue<Vertex*> queue;
 	this->initNodeList();
 	bool found = false;
-	int* final_nodes = new int(this->finish.size());
+	int* final_nodes = new int[this->finish.size()];
 	std::list<Vertex*>::const_iterator it = this->finish.begin();
 	for (unsigned int i = 0; i < this->finish.size(); i++) {
 		final_nodes[i] = this->graph->getVertexPos((*it));
@@ -99,7 +99,7 @@ RuleSet* GraphComplete::completeGraph(Vertex* begin, Vertex* end) {
 		return NULL;
 	}
 	this->initNodeList();
-	int* final_nodes = new int(this->finish.size());
+	int* final_nodes = new int[this->finish.size()];
 	std::list<Vertex*>::const_iterator it = this->finish.begin();
 	for (unsigned int i = 0; i < this->finish.size(); i++) {
 		final_nodes[i] = this->graph->getVertexPos((*it));
@@ -145,7 +145,7 @@ RuleSet * GraphComplete::completeGraph(Vertex * begin, const std::list<Vertex*>&
 		return NULL;
 	}
 	this->initNodeList();
-	int* final_nodes = new int(this->finish.size());
+	int* final_nodes = new int[this->finish.size()];
 	std::list<Vertex*>::const_iterator it = this->finish.begin();
 	for (unsigned int i = 0; i < this->finish.size(); i++) {
 		final_nodes[i] = this->graph->getVertexPos((*it));
