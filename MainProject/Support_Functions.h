@@ -677,13 +677,16 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
-			RuleSet* n_objects = recipe->getShadowSuperSet(j);
-			if (n_objects == NULL) {
+			//Next, we get all objects that are deemed necessary (i.e, that have 100% requirement (either narrative objects or INC)
+			if (time_con->getMaxFrequency() < 0.9995f) { //There are no narrative objects
 				narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
 			}
 			else {
-				for (unsigned int i = 0; i < n_objects->getNumVertices(); i++) {
-					narrative_objects.push_back(n_objects->getVertex(i));
+
+				for (unsigned int i = 0; i < time_con->getNumVertices(); i++) {
+					if (time_con->getFrequency(i) > 0.99995) {
+						narrative_objects.push_back(time_con->getVertex(i));
+					}
 				}
 			}
 			if (time_con->getVertex("wall") != -1) {
@@ -700,7 +703,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 				int total_counts = 0;
 				for (int i = 0; i < 2; i++) {
 					if (time_con != NULL) {
-						graph = new GraphComplete(time_con,true);
+						graph = new GraphComplete(time_con,0);
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
 						for (int k = 0; k < 5; k++) {
 							RuleSet* fin = NULL;
@@ -735,7 +738,6 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 					}
 				}
 				std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 10 locations" << std::endl;
-				delete n_objects; //Shadow set creates a new ruleset, so in the end we have to delete it
 			}
 	}
 }
