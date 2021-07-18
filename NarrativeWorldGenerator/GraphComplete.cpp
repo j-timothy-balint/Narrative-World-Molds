@@ -28,16 +28,17 @@ bool GraphComplete::pathBFS() {
 			}
 			if(!found){
 				//This will add the same edges multiple times, which is okay because we have our check
-				if (this->backwards) {
+				if (this->backwards <= 0) {
 					std::vector<Vertex*> edges;
 					edges = cur->getInEdges();
-					for (std::vector<Vertex*>::const_iterator edge = edges.begin(); edge != edges.end(); edge++) {
+					for (std::vector<Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
 						queue.push((*edge));
 					}
-				}else{
+				}
+				if(this->backwards >= 0){
 					std::multimap<int, Vertex*> edges;
 					edges = cur->getEdges();
-					for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end(); edge++) {
+					for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
 						queue.push((*edge).second);
 					}
 				}
@@ -63,13 +64,14 @@ bool GraphComplete::pDFSGenerate(int pos,int* final_nodes) {
 		}
 	}
 	if (found) {
+		this->nodes[pos] = true; //Mark that we have seen this one before we leave seeing this one
 		return true;
 	}
 	if (this->nodes[pos]) { //already been here, so it's no use
 		return false;
 	}
 	this->nodes[pos] = true; //Mark that we have seen this one
-	if (this->backwards) {
+	if (this->backwards <= 0) {
 		std::vector<Vertex*> edges;
 		edges = graph->getContent(pos)->getVertex()->getInEdges();
 		for (std::vector<Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {
@@ -78,7 +80,8 @@ bool GraphComplete::pDFSGenerate(int pos,int* final_nodes) {
 				found = found || this->pDFSGenerate(graph->getVertexPos((*edge)), final_nodes);
 			}
 		}
-	}else{
+	}
+	if(this->backwards >= 0){
 		std::multimap<int, Vertex*> edges;
 		edges = graph->getContent(pos)->getVertex()->getEdges();
 		for (std::multimap<int, Vertex*>::const_iterator edge = edges.begin(); edge != edges.end() && !found; edge++) {

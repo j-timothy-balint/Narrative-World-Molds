@@ -12,15 +12,15 @@ private:
 	Vertex* start; //The starting node
 	std::list<Vertex*> finish; //The ending nodes. Note that it will end when any one of the finishing nodes are found
 	bool* nodes; //The list of all nodes that we work with
-	bool backwards; //States which way we should assume our rule-set goes. If it's backwards, then we search target -> source, which is much slower
+	int backwards; //States which way we should assume our rule-set goes. If it's backwards, then we search target -> source, which is much slower
 
 	bool pathBFS(); //Performs a non-recursive BredthFirstSearch on the data-set so we can determine if there is a path
 	bool pDFSGenerate(int,int*); //Performs a probabalistic DepthFirstSearch on the data-set to perform the actual generation
 	bool selected(float);//Tells us that this is a selected link
 	void initNodeList();//macro to initialize the bool list
 public:
-	GraphComplete():graph(NULL),set(NULL),start(NULL),finish(NULL),nodes(NULL),backwards(false) {};
-	GraphComplete(RuleSet *set,bool back = false) :start(NULL), finish(NULL), nodes(NULL),backwards(back) { this->set = this->convertRuleSetNoExpand(new RuleSet(*set));this->graph = new FactorGraph(this->set); }
+	GraphComplete():graph(NULL),set(NULL),start(NULL),finish(NULL),nodes(NULL),backwards(-1) {};
+	GraphComplete(RuleSet *set,int back = -1) :start(NULL), finish(NULL), nodes(NULL),backwards(back) { this->set = this->convertRuleSetNoExpand(new RuleSet(*set));this->graph = new FactorGraph(this->set); }
 	~GraphComplete() { delete graph; delete start; finish.clear(); }
 
 	RuleSet* completeGraph(Vertex*, Vertex*); //This does our generation
