@@ -61,7 +61,8 @@ public:
 	Vertex* getShadowVertex(Vertex*);
 
 	//Our checking functions
-	bool hasLocationConnection(int, int);  
+	bool hasLocationConnection(int, int); 
+	bool isNarrativeLocation(int, double,RuleSet*);//Determines if the rule-set meets the criteria for a narrative location based on the location
 
 	bool hasStoryItem(Vertex*);
 	bool hasStoryItem(const std::string&);

@@ -65,7 +65,7 @@ void initializeVertexSetFromJson(const std::string& json_file, Database *db) { /
 }
 
 //Initializes the Generator 
-void initializeGenerator(Database *db, NarrativeWorldMoldGenerator *gen,NarrativeWorldMold *recipe = NULL) {
+void initializeGenerator(Database *db, NarrativeWorldMoldGenerator *gen,const std::list<std::string>& must_have_items_any) {
 	//Add in our locational information
 	RuleSet* set;
 	int counter = 0;
@@ -74,6 +74,15 @@ void initializeGenerator(Database *db, NarrativeWorldMoldGenerator *gen,Narrativ
 		//std::cout << name << std::endl;
 		set = createRuleSet(name, db);
 		if (set != NULL) {
+			bool has_items = false; //Checks to make sure we have at least one of the items
+			for (std::list<std::string>::const_iterator it = must_have_items_any.begin(); it != must_have_items_any.end() && !has_items; it++) {
+				if (set->hasVertex(db->getObjectByID(db->getObjects((*it))))) {
+					has_items = true;
+				}
+			}
+			if (!has_items) {
+				set = combineRuleSetParents(name, db); //Usually, one of them will have the item
+			}
 			gen->addMotif(set);
 			gen->addLocationMotif(i, counter);
 			counter++;
@@ -142,7 +151,7 @@ __declspec(dllexport) std::string NarrativeWorldGeneration::generateNarrativeWor
 	Database *db = new Database("NarrativeWorldMolds.db", true);
 	NarrativeWorldMoldGenerator *gen = new NarrativeWorldMoldGenerator(db);
 	NarrativeWorldMold *mold = new NarrativeWorldMold(mold_json, db);
-	initializeGenerator(db, gen,mold);
+	//initializeGenerator(db, gen); //FIX
 	
 	std::stringstream output;
 	SamplingConstraint *constraint;
@@ -216,7 +225,11 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	std::string saveout;
 	std::ofstream myfile;
 
-	initializeGenerator(db, gen);
+	std::list<std::string> anchors;
+	anchors.push_back("wall");
+	anchors.push_back("room");
+	anchors.push_back("floor");
+	initializeGenerator(db, gen,anchors);
 	//Read in location file
 	std::ifstream reader;
 	std::string line;

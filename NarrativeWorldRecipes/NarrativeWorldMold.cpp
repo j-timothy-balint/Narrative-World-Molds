@@ -373,6 +373,15 @@ bool NarrativeWorldMold::hasLocationConnection(int loc_1, int loc_2) {
 	}
 	return false;
 }
+bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point, RuleSet* test_set) {
+	bool is_narrative_world = true;//Assume innocence until we know that it fails
+	RuleSet* set = this->getShadowSuperSet(location_id); //This tells us the objects that we need
+	TimeStructure* ts = this->getTimeStruct(location_id);//And this lets us know when 
+
+
+	return is_narrative_world;
+}
+
 bool NarrativeWorldMold::hasStoryItem(Vertex* item) {
 	if (item == NULL)
 		return false; //We don't store NULLs

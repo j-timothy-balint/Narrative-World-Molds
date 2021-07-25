@@ -23,6 +23,7 @@ void addChildren(Database* db, Vertex* travel, Content* content) {
 	return; //symmetry in coding 
 }
 
+
 //Creates a ruleset from the database, so we can populate rulesets from the database
 RuleSet* createRuleSet(const std::string &name, Database* db) {
 	int loc_id = db->getLocationID(name);
@@ -66,6 +67,22 @@ RuleSet* createRuleSet(const std::string &name, Database* db) {
 	}
 
 	return res;
+}
+
+//This creates the ruleset, but also combines the created ruleset with all of their parents
+RuleSet* combineRuleSetParents(const std::string& name, Database* db) {
+	RuleSet* set = createRuleSet(name, db);
+	int location_id = db->getLocationID(name);
+	//-1 in the db signifies no parent
+	while (db->getLocationParent(location_id) > 0) {
+		location_id = db->getLocationParent(location_id);
+		RuleSet* result = createRuleSet(db->getLocation(location_id), db);
+		RuleSet new_set = (*result) + set;
+		delete result;
+		delete set;
+		set = new RuleSet(new_set);
+	}
+	return set;
 }
 
 
