@@ -396,7 +396,8 @@ bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point,
 	//have a connection to the narrative world. First, we'll see if there are the objects that are 
 	//suppose to be there
 	for (unsigned int i = 0; i < narrative_objects->getNumVertices() && is_narrative_world; i++) {
-		if (!test_set->hasVertex(this->getShadowVertex(narrative_objects->getVertex(i)))) {
+		if (!test_set->hasVertex(this->getShadowVertex(narrative_objects->getVertex(i))) &&
+			!test_set->hasVertex(narrative_objects->getVertex(i))) { //Depending on the condition, we could have the actual object or the shadow object
 			is_narrative_world = false;
 		}
 		is_INC[set->getVertex(narrative_objects->getVertex(i))] = false;
@@ -406,14 +407,17 @@ bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point,
 			//Now, we search for the vertices that could possibly be connected to those shadow objects
 			bool found = false;
 			Vertex* vert = superset->getVertex(set->getVertex(i)->getName());
-			for (unsigned int j = 0; j < vert->getNumEdges() && !found; j++) {
-				if (test_set->hasVertex(vert->getEdge(j))) {
-					found = true;
+			if (vert != NULL) {//If expansion isn't done, this can occur because the object just doesn't exist in the set
+				for (int j = 0; j < vert->getNumEdges() && !found; j++) {
+					if (test_set->hasVertex(vert->getEdge(j))) {
+						found = true;
+					}
 				}
-			}
-			for (unsigned int j = 0; j < vert->getNumEdges(false) && !found; j++) {
-				if (test_set->hasVertex(vert->getEdge(j))) {
-					found = true;
+				//std::cout << vert->getNumEdges(false)<<" "<<found<<std::endl;
+				for (int j = 0; j < vert->getNumEdges(false) && !found; j++) {
+					if (test_set->getVertex(vert->getEdge(j,false)->getName()) != NULL) {
+						found = true;
+					}
 				}
 			}
 			if (!found) {
@@ -490,6 +494,7 @@ RuleSet* NarrativeWorldMold::getLocationAtTime(int loc_id, double tp, RuleSet* c
 			for (int i = 0; i < bad_set->getNumVertices(); i++) {
 				if (complete_set->getFrequency(complete_set->getVertex(bad_set->getVertex(i))) > 0.9999) {
 					complete_set->addFrequency(complete_set->getVertex(bad_set->getVertex(i)), 0.0f);
+					complete_set->getContent(complete_set->getVertex(bad_set->getVertex(i)))->addLeaf(0, story);//Still a story node, so we need to ensure that we have prepared for it
 				}
 			}
 		}

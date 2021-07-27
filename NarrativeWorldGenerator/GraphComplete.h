@@ -20,7 +20,7 @@ private:
 	void initNodeList();//macro to initialize the bool list
 public:
 	GraphComplete():graph(NULL),set(NULL),start(NULL),finish(NULL),nodes(NULL),backwards(-1) {};
-	GraphComplete(RuleSet *set,int back = -1) :start(NULL), finish(NULL), nodes(NULL),backwards(back) { this->set = this->convertRuleSetNoExpand(new RuleSet(*set));this->graph = new FactorGraph(this->set); }
+	GraphComplete(RuleSet *set,int back = -1,bool cleanup = true) :start(NULL), finish(NULL), nodes(NULL),backwards(back) { this->set = this->convertRuleSetNoExpand(new RuleSet(*set,cleanup));this->graph = new FactorGraph(this->set); }
 	~GraphComplete() { delete graph; delete start; finish.clear(); }
 
 	RuleSet* completeGraph(Vertex*, Vertex*); //This does our generation
@@ -29,6 +29,8 @@ public:
 	RuleSet* completeGraph(const std::list<Vertex*>&, const std::list<Vertex*>&);//Generates a series of rule-sets where any of the vertices work, and concatinates them together.
 	void ChooseXORProbabilities(RuleSet* set); //Kermani will keep XOR probabilities, so we must remove them from play so that it doesn't
 	RuleSet* convertRuleSetNoExpand(RuleSet* set, bool cleanup = true);
+	
+	RuleSet* getSavedSet() { return set; }
 };
 
 #endif

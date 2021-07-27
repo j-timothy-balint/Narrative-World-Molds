@@ -639,21 +639,26 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 	SamplingConstraint *constraint;
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
-	for (int j = 0; j < recipe->getNumLocations(); j++) {
+	for (int j = 3; j < recipe->getNumLocations(); j++) {
 		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
 		for (int i = 0; i <2; i++) {
 			if (time_con != NULL) {
-				constraint = new SamplingConstraint(50000, time_con,with_cleanup);
+				constraint = new SamplingConstraint(10000, time_con,with_cleanup);
 				for (int k = 0; k < 5; k++) {
 					RuleSet *fin = NULL;
 					int fail_counter = 0;
 					if (time_con->getNumRules() > 0) {
 						while (fin == NULL && fail_counter < 100) {
-							fin = constraint->sampleConstraints(12 + k);
+							fin = constraint->sampleConstraints(5 + k);
 							fail_counter += 1;
 							total_counts++;
+							if (fin != NULL) {
+								if (!recipe->isNarrativeLocation(j, -1, fin)) {
+									fin = NULL; //No narrative World
+								}
+							}
 							/*if (fail_counter % 10 == 0) { //I've written Kermani so that it can find nothing, which we want to try again for
 								std::cout << "Failed on " << recipe->getLocation(j) << " for " << fail_counter << " iterations" << std::endl;
 							}*/
@@ -666,7 +671,7 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 					if (fin != NULL) {
 						saveout = convertToJson(fin);
 						sprintf_s(path_files, 500, "%s\\%s_%d.json", path.c_str(), recipe->getLocation(j).c_str(), i * 5 + k);
-						std::cout << path_files << std::endl;
+						//std::cout << path_files << std::endl;
 						myfile.open(path_files);
 						myfile << saveout;
 						myfile.close();
@@ -674,14 +679,14 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 						delete fin;
 					}
 					else {
-						std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
+						//std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
 						total_failures++; //Turns out the last one did fail
 					}
 				}
 				delete constraint;
 			}
 		}
-		std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 50 locations" << std::endl;
+		std::cout << recipe->getLocation(j) << ":Failed on " << total_failures << " out of " << total_counts << " attempts to make 50 locations" << std::endl;
 	}
 }
 
@@ -696,15 +701,16 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
+			graph = new GraphComplete(time_con, 0, with_cleanup);
 			//Next, we get all objects that are deemed necessary (i.e, that have 100% requirement (either narrative objects or INC)
-			if (time_con->getMaxFrequency() < 0.999999f) { //There are no narrative objects
+			if (graph->getSavedSet()->getMaxFrequency() < 0.999999f) { //There are no narrative objects
 				narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
 			}
 			else {
 
-				for (unsigned int i = 0; i < time_con->getNumVertices(); i++) {
-					if (time_con->getFrequency(i) > 0.999999f) {
-						narrative_objects.push_back(time_con->getVertex(i));
+				for (unsigned int i = 0; i < graph->getSavedSet()->getNumVertices(); i++) {
+					if (graph->getSavedSet()->getFrequency(i) > 0.999999f) {
+						narrative_objects.push_back(graph->getSavedSet()->getVertex(i));
 					}
 				}
 			}
@@ -722,7 +728,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 				int total_counts = 0;
 				for (int i = 0; i < 2; i++) {
 					if (time_con != NULL) {
-						graph = new GraphComplete(time_con,0);
+						
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
 						for (int k = 0; k < 5; k++) {
 							RuleSet* fin = NULL;
@@ -745,7 +751,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 							if (fin != NULL) {
 								saveout = convertToJson(fin);
 								sprintf_s(path_files, 500, "%s\\%s_%d.json", path.c_str(), recipe->getLocation(j).c_str(), i * 5 + k);
-								std::cout << path_files << std::endl;
+								//std::cout << path_files << std::endl;
 								myfile.open(path_files);
 								myfile << saveout;
 								myfile.close();
@@ -753,15 +759,16 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 								delete fin;
 							}
 							else {
-								std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
+								//std::cout << "Failed on " << i << " iteration of " << recipe->getLocation(j) << std::endl;
 								total_failures++; //Turns out the last one did fail
 							}
 							total_failures += fail_counter - 1;
 						}
-						delete graph;
+						
 					}
+					delete graph;
 				}
-				std::cout << "Failed on " << total_failures << " out of " << total_counts << " attempts to make 10 locations" << std::endl;
+				std::cout << recipe->getLocation(j)<<": Failed on " << total_failures << " out of " << total_counts << " attempts to make 10 locations" << std::endl;
 			}
 	}
 }
