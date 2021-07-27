@@ -492,9 +492,12 @@ RuleSet* NarrativeWorldMold::getLocationAtTime(int loc_id, double tp, RuleSet* c
 			//then, we need to find the binary ons and turn them off
 			//Also, we know that they are in here
 			for (int i = 0; i < bad_set->getNumVertices(); i++) {
+
 				if (complete_set->getFrequency(complete_set->getVertex(bad_set->getVertex(i))) > 0.9999) {
 					complete_set->addFrequency(complete_set->getVertex(bad_set->getVertex(i)), 0.0f);
-					complete_set->getContent(complete_set->getVertex(bad_set->getVertex(i)))->addLeaf(0, story);//Still a story node, so we need to ensure that we have prepared for it
+					if (good_set->getVertex(bad_set->getVertex(i)) == -1) {
+						complete_set->getContent(complete_set->getVertex(bad_set->getVertex(i)))->addLeaf(0, story);//Still a story node, so we need to ensure that we have prepared for it
+					}
 				}
 			}
 		}
