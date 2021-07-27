@@ -204,7 +204,7 @@ RuleSet* GraphComplete::completeGraph(const std::list<Vertex*>& begin, const std
 			result = set;
 		}
 		else {
-			RuleSet new_set = (*result) + set;
+			RuleSet new_set = (*result) + (*set);
 			delete result;
 			delete set;
 			result = new RuleSet(new_set);
