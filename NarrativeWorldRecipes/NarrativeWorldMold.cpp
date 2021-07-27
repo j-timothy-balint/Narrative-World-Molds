@@ -396,8 +396,8 @@ bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point,
 	//have a connection to the narrative world. First, we'll see if there are the objects that are 
 	//suppose to be there
 	for (unsigned int i = 0; i < narrative_objects->getNumVertices() && is_narrative_world; i++) {
-		if (!test_set->hasVertex(this->getShadowVertex(narrative_objects->getVertex(i))) &&
-			!test_set->hasVertex(narrative_objects->getVertex(i))) { //Depending on the condition, we could have the actual object or the shadow object
+		if (test_set->getVertex(this->getShadowVertex(narrative_objects->getVertex(i))->getName()) == -1 &&
+			test_set->getVertex(narrative_objects->getVertex(i)->getName()) == -1) { //Depending on the condition, we could have the actual object or the shadow object
 			is_narrative_world = false;
 		}
 		is_INC[set->getVertex(narrative_objects->getVertex(i))] = false;
@@ -415,7 +415,7 @@ bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point,
 				}
 				//std::cout << vert->getNumEdges(false)<<" "<<found<<std::endl;
 				for (int j = 0; j < vert->getNumEdges(false) && !found; j++) {
-					if (test_set->getVertex(vert->getEdge(j,false)->getName()) != NULL) {
+					if (test_set->getVertex(vert->getEdge(j,false)->getName()) > -1) {
 						found = true;
 					}
 				}
