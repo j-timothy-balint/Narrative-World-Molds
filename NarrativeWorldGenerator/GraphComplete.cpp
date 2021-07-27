@@ -237,16 +237,16 @@ void GraphComplete::ChooseXORProbabilities(RuleSet* set) {
 	//which we do for each type of support!
 	FactorGraph* fg = new FactorGraph(set, true);//Reverse it because we want targets
 	std::pair<std::list<Factor*>::const_iterator, std::list<Factor*>::const_iterator> range = fg->getFactors();
-	std::list<Factor*> orientations;//Each orientation is not independent
-	std::list<Factor*> support; //Each support is independent
-	for (std::list<Factor*>::const_iterator it = range.first; it != range.second; it++) {
+	//std::list<Factor*> orientations;//Each orientation is not independent
+	//std::list<Factor*> support; //Each support is independent
+	/*for (std::list<Factor*>::const_iterator it = range.first; it != range.second; it++) {
 		if ((*it)->getExistance()) {
 			support.push_back((*it));
 		}
 		else if ((*it)->getName().find("orientation") != std::string::npos) {
 			orientations.push_back((*it));
 		}
-	}
+	}*/
 
 	std::map<int, Vertex*> vmap;//If I coded fg right, the list is equivalent to the ruleset list
 	std::pair<std::vector<Content*>::const_iterator, std::vector<Content*>::const_iterator> vmap_range = fg->getVertices();
@@ -264,9 +264,14 @@ void GraphComplete::ChooseXORProbabilities(RuleSet* set) {
 		if (set->getContent(i)->getNumLeafs() > 0 && set->getContent(i)->getLeaf(0)->getName() == "Story") {
 			inc = true; //Guess this vertex was INC
 		}
-		std::pair<std::multimap<Vertex*, int>::const_iterator, std::multimap<Vertex*, int>::const_iterator> rule_range = fg->getRuleNumbers(v);
-		std::pair<std::multimap<Vertex*, Factor*>::const_iterator, std::multimap<Vertex*, Factor*>::const_iterator> range = fg->getFactorEdges(v);
-		for (std::list<Factor*>::iterator it = support.begin(); it != support.end(); it++) {
+		//std::pair<std::multimap<Vertex*, int>::const_iterator, std::multimap<Vertex*, int>::const_iterator> rule_range = fg->getRuleNumbers(v);
+		//std::pair<std::multimap<Vertex*, Factor*>::const_iterator, std::multimap<Vertex*, Factor*>::const_iterator> range = fg->getFactorEdges(v);
+		//If it is INC, then we need to choose one or more nodes to be the connection
+		if (inc) {
+			int keeper = rand() % v->getNumEdges();
+			set->addFrequency(set->getVertex(v->getEdge(0,true,keeper)->getName()), 1.0f);
+		}
+		/*for (std::list<Factor*>::iterator it = support.begin(); it != support.end(); it++) {
 			int counter = 0;
 			for (std::map<Vertex*, Factor*>::const_iterator fit = range.first; fit != range.second; fit++) {
 				if ((*fit).second == (*it)) {
@@ -318,7 +323,7 @@ void GraphComplete::ChooseXORProbabilities(RuleSet* set) {
 
 				}
 			}
-		}
+		} */
 	}
 	//End removing supports
 	delete fg;

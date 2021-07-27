@@ -639,7 +639,7 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 	SamplingConstraint *constraint;
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
-	for (int j = 3; j < recipe->getNumLocations(); j++) {
+	for (int j = 0; j < recipe->getNumLocations(); j++) {
 		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
@@ -701,7 +701,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
-			graph = new GraphComplete(time_con, 0, with_cleanup);
+ 			graph = new GraphComplete(time_con, 0, with_cleanup);
 			//Next, we get all objects that are deemed necessary (i.e, that have 100% requirement (either narrative objects or INC)
 			if (graph->getSavedSet()->getMaxFrequency() < 0.999999f) { //There are no narrative objects
 				narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
@@ -766,8 +766,9 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 						}
 						
 					}
-					delete graph;
+					
 				}
+				delete graph;
 				std::cout << recipe->getLocation(j)<<": Failed on " << total_failures << " out of " << total_counts << " attempts to make 10 locations" << std::endl;
 			}
 	}
