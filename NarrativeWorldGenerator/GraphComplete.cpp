@@ -193,17 +193,22 @@ RuleSet * GraphComplete::completeGraph(Vertex * begin, const std::list<Vertex*>&
 }
 
 RuleSet* GraphComplete::completeGraph(const std::list<Vertex*>& begin, const std::list<Vertex*>& end) {
-	RuleSet *result = new RuleSet();
+	RuleSet *result = NULL;
 	for (std::list<Vertex*>::const_iterator it = begin.begin(); it != begin.end(); it++) {
 		RuleSet *set = this->completeGraph((*it), end);
 		if (set == NULL) { //A failure for one is a failure for all in a narrative world
 			delete result;
 			return NULL;
 		}
-		RuleSet new_set = (*result) + set;
-		delete result;
-		delete set;
-		result = new RuleSet(new_set);
+		if (result == NULL) {
+			result = set;
+		}
+		else {
+			RuleSet new_set = (*result) + set;
+			delete result;
+			delete set;
+			result = new RuleSet(new_set);
+		}
 	}
 	return result;
 }

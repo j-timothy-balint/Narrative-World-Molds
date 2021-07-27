@@ -375,10 +375,56 @@ bool NarrativeWorldMold::hasLocationConnection(int loc_1, int loc_2) {
 }
 bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point, RuleSet* test_set) {
 	bool is_narrative_world = true;//Assume innocence until we know that it fails
-	RuleSet* set = this->getShadowSuperSet(location_id); //This tells us the objects that we need
+	RuleSet* set = this->getSuperset(location_id); //This tells us the objects that we need
 	TimeStructure* ts = this->getTimeStruct(location_id);//And this lets us know when 
+	FactorGraph* superset = new FactorGraph(this->getSpatialConstraint(location_id));
+	if (ts == NULL && set == NULL) { //Denotes a motif-only location
+		return is_narrative_world; 
+	}
+	bool* is_INC = new bool[set->getNumVertices()];
+	for (unsigned int i = 0; i < set->getNumVertices(); i++) {
+		is_INC[i] = true;
+	}
+	//Now, we get the closest points without going over for that location
+	RuleSet* narrative_objects = NULL;
+	for (std::map<double, RuleSet*>::const_iterator it = ts->time_points.begin(); it != ts->time_points.end(); it++) {
+		if ((*it).first <= time_point) {
+			narrative_objects = (*it).second;
+		}
+	}
+	//Now, we have two choices, either the objects are in the narrative world (test_set), or the objects
+	//have a connection to the narrative world. First, we'll see if there are the objects that are 
+	//suppose to be there
+	for (unsigned int i = 0; i < narrative_objects->getNumVertices() && is_narrative_world; i++) {
+		if (!test_set->hasVertex(this->getShadowVertex(narrative_objects->getVertex(i)))) {
+			is_narrative_world = false;
+		}
+		is_INC[set->getVertex(narrative_objects->getVertex(i))] = false;
+	}
+	for (unsigned int i = 0; i < set->getNumVertices() && is_narrative_world; i++) {
+		if (is_INC[i]) {
+			//Now, we search for the vertices that could possibly be connected to those shadow objects
+			bool found = false;
+			Vertex* vert = superset->getVertex(set->getVertex(i)->getName());
+			for (unsigned int j = 0; j < vert->getNumEdges() && !found; j++) {
+				if (test_set->hasVertex(vert->getEdge(j))) {
+					found = true;
+				}
+			}
+			for (unsigned int j = 0; j < vert->getNumEdges(false) && !found; j++) {
+				if (test_set->hasVertex(vert->getEdge(j))) {
+					found = true;
+				}
+			}
+			if (!found) {
+				is_narrative_world = false;
+			}
 
-
+		}
+	}
+	//Now, we see if there is a connection for the objects that are not yet in the scene
+	delete is_INC;
+	delete superset;
 	return is_narrative_world;
 }
 

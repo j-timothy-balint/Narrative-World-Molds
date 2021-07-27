@@ -77,10 +77,12 @@ RuleSet* combineRuleSetParents(const std::string& name, Database* db) {
 	while (db->getLocationParent(location_id) > 0) {
 		location_id = db->getLocationParent(location_id);
 		RuleSet* result = createRuleSet(db->getLocation(location_id), db);
-		RuleSet new_set = (*result) + set;
-		delete result;
-		delete set;
-		set = new RuleSet(new_set);
+		if (result != NULL) {
+			RuleSet new_set = (*result) + set;
+			delete result;
+			delete set;
+			set = new RuleSet(new_set);
+		}
 	}
 	return set;
 }
@@ -695,13 +697,13 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
 			//Next, we get all objects that are deemed necessary (i.e, that have 100% requirement (either narrative objects or INC)
-			if (time_con->getMaxFrequency() < 0.9995f) { //There are no narrative objects
+			if (time_con->getMaxFrequency() < 0.999999f) { //There are no narrative objects
 				narrative_objects.push_back(time_con->getVertex(rand() % time_con->getNumVertices()));
 			}
 			else {
 
 				for (unsigned int i = 0; i < time_con->getNumVertices(); i++) {
-					if (time_con->getFrequency(i) > 0.99995) {
+					if (time_con->getFrequency(i) > 0.999999f) {
 						narrative_objects.push_back(time_con->getVertex(i));
 					}
 				}
@@ -730,6 +732,11 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 									fin = graph->completeGraph(narrative_objects, end_objects);
 									fail_counter += 1;
 									total_counts++;
+									if (fin != NULL) {
+										if (!recipe->isNarrativeLocation(j, -1, fin)) {
+											fin = NULL; //No narrative World
+										}
+									}
 								}
 							}
 							else {
