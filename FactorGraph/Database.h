@@ -69,6 +69,7 @@ public:
 	Vertex*     getMotifRuleVariable(int, int, int);
 	int         getMotifRuleVariablePos(int, int, int);
 	int         getNumMotifObjects(int); //Gets the number of motif objects per location
+	int         getNumMotifObjectOccurance(int); //Gets the number of motifs an object occurs in
 	int         getNumMotifObjects(int,int); //Gets the number of motif objects per location and the fragment
 	Vertex*     getMotifObject(int, int);//Provides a motif object based on the location and position
 	Vertex*     getMotifObject(int, int, int);//Gets a motif object id based on the location and fragment and position

@@ -62,7 +62,7 @@ public:
 	void addMotif(RuleSet* r) { this->motifs.push_back(r); }
 	void addnarrative(const std::string& name, RuleSet* r) { this->narrative.insert(std::make_pair(name, r)); }
 	void addForbiddenObject(int obj_id) { this->forbidden_objects.push_back(obj_id); }
-	Vertex* getVertex(int);//Gets a vertex based on the vertex number
+	Vertex* getVertex(int,bool recursive_motif = false);//Gets a vertex based on the vertex number
 	Vertex* getVertex(const std::string&);
 	//Determines if our recipe has a factor or vertex (which our matrices are built off of)
 	bool hasFactor(Factor*);

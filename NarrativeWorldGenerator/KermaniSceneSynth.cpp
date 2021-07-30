@@ -85,14 +85,14 @@ float SamplingConstraint::cost_function(int desired_objects) {// Remember, in th
 	for (int i = 0; i < this->set->getNumVertices(); i++) {
 		float value = this->set->getContent(i)->calculateExternal();
 		if (this->vertices[i]) {
-			positive_prob *= value;
+			positive_prob *= value; //Our yes/no is now down in the external function
 		}
 		else {
 			negitive_prob *= (1.0f - value); //This really biases towards only the strongest motif, and cuts down on variability
 		}
 	}
 	total_prob = positive_prob *negitive_prob;
-	for (int i = 0; i < this->set->getNumRules(); i++) {
+	/*for (int i = 0; i < this->set->getNumRules(); i++) {
 		//We don't have single factors, so ignore them
 		//std::cout <<i<<":"<< total_prob << std::endl;
 		if (this->set->getFactor(i)->getNumComponents() > 1) {
@@ -103,15 +103,15 @@ float SamplingConstraint::cost_function(int desired_objects) {// Remember, in th
 			//and switch between if these are joint probabilities or conditional probabilites. It's just bad
 			}
 			else {//can cause a float underflow for large motifs
-				/*std::pair<std::multimap<int, int>::const_iterator, std::multimap<int, int>::const_iterator> range;
+				std::pair<std::multimap<int, int>::const_iterator, std::multimap<int, int>::const_iterator> range;
 				range = set->getPredicate(i);
 				int u = (*range.first).second;
 				range.first++;
-				int v = (*range.first).second;*/
+				int v = (*range.first).second;
 				total_prob *= (1.0f - this->set->getRuleProbability(i));
 			}
 		}
-	}
+	}*/
 	return total_prob; //May incorporate Beta into this
 }
 
@@ -393,6 +393,7 @@ void SamplingConstraint::ground(Content* content) {
 }
 //This implements the sampling system of Kermani et al.
 RuleSet* SamplingConstraint::sampleConstraints(int num_objects) {
+	//First clear out vertices and rules
 	this->beta = 1.0f;
 	float best_cost = this->cost_function(num_objects);
 	std::vector<bool> best_verts;
@@ -414,6 +415,9 @@ RuleSet* SamplingConstraint::sampleConstraints(int num_objects) {
 			//std::cout << "Accepting old:" << best_cost << ",new:" << cost_cost << std::endl;
 			//Here, we make the swap by deleting best and then deep copying cost
 			best_cost = cost_cost;
+			/*if (best_cost > 0) {
+				std::cout << best_cost << std::endl;
+			}*/
 			for (int j = 0; j < this->set->getNumVertices(); j++) {
 				best_verts[j] = this->vertices[j];
 			}
@@ -434,7 +438,14 @@ RuleSet* SamplingConstraint::sampleConstraints(int num_objects) {
 			this->beta *= 10.0f;//We have the accept function reversed, so we reverse this
 	}
 	if (best_cost == 0.0) { //If we didn't converge on anything, it's a failure
-		//std::cout << "Did not converge" << std::endl;
+		/*std::cout << "Did not converge" << std::endl;
+		for (unsigned int i = 0; i < this->vertices.size(); i++) {
+			if (vertices[i] == false && this->set->getFrequency(i) > 0.99999f) {
+				std::cout << this->set->getVertex(i)->getName() << std::endl;
+			}
+		}*/
+		this->vertices.clear();
+		this->rules.clear();
 		return NULL;
 	}
 	//else {
@@ -509,6 +520,8 @@ RuleSet* SamplingConstraint::sampleConstraints(int num_objects) {
 	}
 
 	best_set->cleanRuleSet();
+	this->vertices.clear();
+	this->rules.clear();
 	//Make sure we have something to show
 	if (best_set->getNumVertices() > 0)
 		return best_set;
@@ -558,15 +571,13 @@ void SamplingConstraint::ChooseXORProbabilities(RuleSet* set) {
 
 	//Begin removing supports 
 	for (int i = 0; i < set->getNumVertices(); i++) {
-		Vertex *v = vmap[i];
+		Vertex* v = vmap[i];
 		//Here, we also determine if the content was a necessary item that is no longer one (and therefore we need INC)
-		bool inc = false;
-		if (set->getContent(i)->getNumLeafs() > 0 && set->getContent(i)->getLeaf(0)->getName() == "Story") { 
-			inc = true; //Guess this vertex was INC
+		if (set->getContent(i)->getNumLeafs() > 0 && set->getContent(i)->getLeaf(0)->getName() == "Story" && set->getContent(i)->getProbability(0) < 1 - EPSILON) {
+			int keeper = rand() % v->getNumEdges();
+			set->addFrequency(set->getVertex(v->getEdge(0, true, keeper)->getName()), 1.0f);
 		}
-		std::pair<std::multimap<Vertex*, int>::const_iterator, std::multimap<Vertex*, int>::const_iterator> rule_range = fg->getRuleNumbers(v);
-		std::pair<std::multimap<Vertex*, Factor*>::const_iterator, std::multimap<Vertex*, Factor*>::const_iterator> range = fg->getFactorEdges(v);
-		for (std::list<Factor*>::iterator it = support.begin(); it != support.end(); it++) {
+		/*for (std::list<Factor*>::iterator it = support.begin(); it != support.end(); it++) {
 			int counter = 0;
 			for (std::map<Vertex*, Factor*>::const_iterator fit = range.first; fit != range.second; fit++) {
 				if ((*fit).second == (*it)) {
@@ -599,7 +610,7 @@ void SamplingConstraint::ChooseXORProbabilities(RuleSet* set) {
 				}
 			}
 			else {
-				//If the rule is a keeper, than we have to set the frequency 
+				//If the rule is a keeper, than we have to set the frequency
 				std::multimap<Vertex*, int>::const_iterator pit = rule_range.first;
 				for (std::multimap<Vertex*, Factor*>::const_iterator fit = range.first; fit != range.second && pit != rule_range.second; fit++, pit++) {
 					if ((*fit).second == (*it)) {
@@ -618,7 +629,7 @@ void SamplingConstraint::ChooseXORProbabilities(RuleSet* set) {
 
 				}
 			}
-		}
+		} */
 	}
 	//End removing supports
 	delete fg;

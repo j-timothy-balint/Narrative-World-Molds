@@ -313,7 +313,7 @@ RuleSet* NarrativeWorldMold::getShadowSuperSet(int loc_id) {
 	}
 	//Now, we go through and replace all super-set items with their shadow set content variables
 	//Create a copy so that we don't get confused
-	RuleSet *shadow = new RuleSet((*superset),false);//We don't want to DCS it
+	RuleSet *shadow = new RuleSet((*superset),false);//We don't want to DCS it, but why not?
 	for (int i = 0; i < shadow->getNumVertices(); i++) {
 		shadow->replaceVertex(shadow->getVertex(i), this->getShadowVertex(shadow->getVertex(i))); //Replaces one vertex with another
 	}
@@ -395,12 +395,14 @@ bool NarrativeWorldMold::isNarrativeLocation(int location_id, double time_point,
 	//Now, we have two choices, either the objects are in the narrative world (test_set), or the objects
 	//have a connection to the narrative world. First, we'll see if there are the objects that are 
 	//suppose to be there
-	for (unsigned int i = 0; i < narrative_objects->getNumVertices() && is_narrative_world; i++) {
-		if (test_set->getVertex(this->getShadowVertex(narrative_objects->getVertex(i))->getName()) == -1 &&
-			test_set->getVertex(narrative_objects->getVertex(i)->getName()) == -1) { //Depending on the condition, we could have the actual object or the shadow object
-			is_narrative_world = false;
+	if (narrative_objects != NULL) {
+		for (unsigned int i = 0; i < narrative_objects->getNumVertices() && is_narrative_world; i++) {
+			if (test_set->getVertex(this->getShadowVertex(narrative_objects->getVertex(i))->getName()) == -1 &&
+				test_set->getVertex(narrative_objects->getVertex(i)->getName()) == -1) { //Depending on the condition, we could have the actual object or the shadow object
+				is_narrative_world = false;
+			}
+			is_INC[set->getVertex(narrative_objects->getVertex(i))] = false;
 		}
-		is_INC[set->getVertex(narrative_objects->getVertex(i))] = false;
 	}
 	for (unsigned int i = 0; i < set->getNumVertices() && is_narrative_world; i++) {
 		if (is_INC[i]) {
@@ -495,7 +497,13 @@ RuleSet* NarrativeWorldMold::getLocationAtTime(int loc_id, double tp, RuleSet* c
 
 				if (complete_set->getFrequency(complete_set->getVertex(bad_set->getVertex(i))) > 0.9999) {
 					complete_set->addFrequency(complete_set->getVertex(bad_set->getVertex(i)), 0.0f);
-					if (good_set->getVertex(bad_set->getVertex(i)) == -1) {
+					if (good_set != NULL) {
+						if (good_set->getVertex(bad_set->getVertex(i)) == -1) {
+							complete_set->getContent(complete_set->getVertex(bad_set->getVertex(i)))->addLeaf(0, story);//Still a story node, so we need to ensure that we have prepared for it
+						}
+					}
+					else {
+						//If there is no good set, it's obviously INC
 						complete_set->getContent(complete_set->getVertex(bad_set->getVertex(i)))->addLeaf(0, story);//Still a story node, so we need to ensure that we have prepared for it
 					}
 				}
@@ -507,14 +515,15 @@ RuleSet* NarrativeWorldMold::getLocationAtTime(int loc_id, double tp, RuleSet* c
 		for (int i = 0; i < good_set->getNumVertices(); i++) {
 			if (complete_set->getFrequency(complete_set->getVertex(good_set->getVertex(i))) < 0.0001) {
 				complete_set->addFrequency(complete_set->getVertex(good_set->getVertex(i)), good_set->getFrequency(i));
-				Content *c = complete_set->getContent(complete_set->getVertex(good_set->getVertex(i)));
-				//And we set it to the shadow object as we are grounding
-				if (c != NULL) {
-					c->changeVertex(this->getShadowVertex(good_set->getVertex(i)));
-					//c->addLeaf(0, story);
-					//c->addLeaf(1, (this->getShadowVertex(good_set->getVertex(i)));
-				}
 			}
+			Content* c = complete_set->getContent(complete_set->getVertex(good_set->getVertex(i)));
+			//And we set it to the shadow object as we are grounding
+			if (c != NULL) {
+				c->changeVertex(this->getShadowVertex(good_set->getVertex(i)));
+				//c->addLeaf(0, story);
+				//c->addLeaf(1, (this->getShadowVertex(good_set->getVertex(i)));
+			}
+
 		}
 	}
 	return complete_set;

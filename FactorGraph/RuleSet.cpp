@@ -825,7 +825,7 @@ RuleSet RuleSet::operator +(const RuleSet& rhs) {
 		new_r_map[i] = result.addContent(rhs.getContent(i));
 	}
 	for (int i = 0; i < this->getNumVertices(); i++) {
-		if (v_map.find(i) == v_map.end()) {
+		if (v_map.find(i) == v_map.end()) {//Vertex map holds the connection between the two of them
 			new_l_map[i] = result.addContent(this->getContent(i));
 		}
 		else {

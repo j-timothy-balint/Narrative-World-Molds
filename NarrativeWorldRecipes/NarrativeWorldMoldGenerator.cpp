@@ -122,7 +122,7 @@ int NarrativeWorldMoldGenerator::getVertexNumber(Vertex* vert, bool deep_copy) {
 	}
 	return obj_id;
 }
-Vertex* NarrativeWorldMoldGenerator::getVertex(int obj_id) {
+Vertex* NarrativeWorldMoldGenerator::getVertex(int obj_id,bool recursive_motif) {
 	Vertex* vert = NULL;
 	if (obj_id != -1) {
 		vert = this->db->getObjectByID(obj_id);
@@ -132,8 +132,14 @@ Vertex* NarrativeWorldMoldGenerator::getVertex(int obj_id) {
 			}
 		}
 	}
+	if (recursive_motif) {
+		if (this->db->getNumMotifObjectOccurance(obj_id) == 0) {
+			return this->getVertex(this->db->getObjects(this->db->getParentObject(obj_id)));
+		}
+	}
 	return vert;
 }
+
 Vertex* NarrativeWorldMoldGenerator::getVertex(const std::string& obj_name) {
 	Vertex* vert = this->db->getObjectByID(this->db->getObjects(obj_name));
 	for (std::map<int, Vertex*>::const_iterator it = this->vertices.begin(); vert == NULL && it != this->vertices.end(); it++) {
@@ -283,7 +289,7 @@ RuleSet* NarrativeWorldMoldGenerator::Dijstra(RuleSet* set, RuleSet *compares, i
 	while (node != -1) {
 		seen[node] = true;
 		//For each neighbor of node
-		range = set->getPredicates(set->getContent(node),1);
+		range = set->getPredicates(set->getContent(node),-1);
 		for (std::list<int>::iterator it = range.begin(); it != range.end(); it++) {
 			int v = set->getPredicate((*it)).first->second;
 			int alt = dist[node] + 1;//For unweighted, dist_between is 1
@@ -466,9 +472,11 @@ int NarrativeWorldMoldGenerator::matchedEdges(RuleSet* lhs, RuleSet* rhs) {
 
 RuleSet* NarrativeWorldMoldGenerator::buildConnections(int loc_id, RuleSet* diff, RuleSet* best_motif_match) {
 	RuleSet *result = new RuleSet((*best_motif_match), false); //We copy because we are working with best motif match
+	
 	for (int i = 0; i < diff->getNumVertices(); i++) {
 		//bool found = false;
-		for (unsigned int j = 0; j < this->motifs.size(); j++) {
+		bool found = false;
+		for (unsigned int j = 0; j < this->motifs.size() && !found; j++) {
 			//Determine if it belongs to the location, if so, test it
 			if (j != loc_id) {
 				RuleSet* motif = this->motifs.at(j);
@@ -479,6 +487,8 @@ RuleSet* NarrativeWorldMoldGenerator::buildConnections(int loc_id, RuleSet* diff
 					if (content != NULL) {
 						int pos = motif->getVertex(content->getVertex());
 						RuleSet* intersection = motif->intersection((*motif), (*best_motif_match));
+						intersection->updateFrequency(intersection->getVertex(motif->getVertex(pos)), 0.0f);
+						intersection->cleanRuleSet(true);
 						if (intersection->getNumVertices() > 0) {
 							//Then, we see if we get back with dijstra
 							RuleSet* addition = Dijstra(motif, intersection, pos, diff->getContent(i)); //Same set, so should be fine, but also considers parents
@@ -490,6 +500,7 @@ RuleSet* NarrativeWorldMoldGenerator::buildConnections(int loc_id, RuleSet* diff
 								result = new RuleSet(new_set,false);
 								//Now, we make sure to set our uniqueness away, because we have the unique item already inset in the rule-set
 								diff->getContent(i)->setUnique(false);
+								found = true;
 							}
 							delete addition;
 						}
@@ -709,7 +720,7 @@ NarrativeWorldMold* NarrativeWorldMoldGenerator::readInNarrativeWorldMold(const 
 								std::string parent_name = extractParent((*sit));
 								if (this->hasVertex(parent_name)) {
 									//If we find it, we actually want to search the siblings
-									Vertex * travel = this->getVertex(parent_name);
+									Vertex * travel = this->getVertex(this->db->getObjects(parent_name),true);
 									//If our traveler is already a story item, then we should search the parent's siblings for one that isn't
 									result->addStoryItem(vex, travel);
 								}

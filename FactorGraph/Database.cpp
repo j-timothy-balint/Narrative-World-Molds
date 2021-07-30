@@ -683,6 +683,20 @@ int Database::getNumMotifObjects(int locationsID) {
 	return atoi(res.c_str());
 
 } 
+int Database::getNumMotifObjectOccurance(int objectID) {
+	if (objectID == -1)
+		return -1;
+	std::string res;
+	std::stringstream query;
+	query << "SELECT COUNT(DISTINCT LocationID ) as num_objects from MotifObjects"
+		<< " WHERE ObjectsID= " << objectID;
+	int rc = sqlite3_exec(this->db, query.str().c_str(), sql_callback_single, &res, &this->ErrMsg);
+	if (rc != SQLITE_OK) {
+		sqlite3_free(this->ErrMsg);
+		return -1;
+	}
+	return atoi(res.c_str());
+}
 //Gets the number of motif objects per location and fragment
 int Database::getNumMotifObjects(int locationsID, int fragmentID) {
 	if (locationsID == -1)
