@@ -80,9 +80,9 @@ void initializeGenerator(Database *db, NarrativeWorldMoldGenerator *gen,const st
 					has_items = true;
 				}
 			}
-			if (!has_items) {
-				set = combineRuleSetParents(name, db); //Usually, one of them will have the item
-			}
+			//if (!has_items) {
+			//	set = combineRuleSetParents(name, db); //Usually, one of them will have the item
+			//}
 			gen->addMotif(set);
 			gen->addLocationMotif(i, counter);
 			counter++;
@@ -313,7 +313,7 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	//myfile << saveout;
 	//myfile.close(); 
 	if (with_addition && with_temporial && with_cleanup) {
-		//narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
+		narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
 		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\SceneSeer\\", recipe, gen, db, with_cleanup);
 	}
 	else if (!with_addition) {
@@ -331,6 +331,7 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	else {
 		//std::cout << "Cleanup toggle is " << with_cleanup << std::endl;
 		narrativeWorldDifferenceTest("D:\\Narrative World\\NarrativeWorldMoldTest\\princess\\No Remove\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Remove\\SceneSeer\\", recipe, gen, db, with_cleanup);
 	}
 	delete gen;
 	db->cleanObjects();
@@ -420,13 +421,12 @@ int main() {
 	NarrativeWorldMoldTest(db);
 	std::cout << "No Additional Structure" << std::endl;
 	NarrativeWorldMoldTest(db,false);
-	std::cout << "No Additional Time" << std::endl;
-	NarrativeWorldMoldTest(db, true, false);
-	/*std::cout << "No Removal of items" << std::endl;
-	
+	//std::cout << "No Additional Time" << std::endl;
+	//NarrativeWorldMoldTest(db, true, false);
+	std::cout << "No Removal of items" << std::endl;
 	NarrativeWorldMoldTest(db, true, true,false);
-	std::cout << "Motif Only" << std::endl;
-	NarrativeWorldMoldTest(db, true, true, false,true);
+	//std::cout << "Motif Only" << std::endl;
+	//NarrativeWorldMoldTest(db, true, true, false,true);
 	//std::cout << "Calculating Kermani Motifs" << std::endl;
 	//WorldTest(db);
 	/*std::list<ConstraintStruct> constraints = getConstraints(db, "../../SUN RGBD/Kermani_Bounds.csv");

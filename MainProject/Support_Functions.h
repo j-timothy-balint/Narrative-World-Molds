@@ -643,14 +643,14 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
-		for (int i = 0; i <2; i++) {
+		for (int i = 0; i <200; i++) {
 			if (time_con != NULL) {
 				constraint = new SamplingConstraint(10000, time_con,with_cleanup);
 				for (int k = 0; k < 5; k++) {
 					RuleSet *fin = NULL;
 					int fail_counter = 0;
 					if (time_con->getNumRules() > 0) {
-						while (fin == NULL && fail_counter < 100) {
+						while (fin == NULL && fail_counter < 1) {
 							fin = constraint->sampleConstraints(5 + k);
 							fail_counter += 1;
 							total_counts++;
@@ -726,7 +726,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			if (end_objects.size() != 0) {
 				int total_failures = 0;
 				int total_counts = 0;
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 200; i++) {
 					if (time_con != NULL) {
 						
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
@@ -734,7 +734,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 							RuleSet* fin = NULL;
 							int fail_counter = 0;
 							if (time_con->getNumRules() > 0) {
-								while (fin == NULL && fail_counter < 100) {
+								while (fin == NULL && fail_counter < 1) {
 									fin = graph->completeGraph(narrative_objects, end_objects);
 									fail_counter += 1;
 									total_counts++;
