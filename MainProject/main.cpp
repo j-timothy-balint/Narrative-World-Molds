@@ -80,9 +80,9 @@ void initializeGenerator(Database *db, NarrativeWorldMoldGenerator *gen,const st
 					has_items = true;
 				}
 			}
-			//if (!has_items) {
-			//	set = combineRuleSetParents(name, db); //Usually, one of them will have the item
-			//}
+			if (!has_items) {
+				set = combineRuleSetParents(name, db); //Usually, one of them will have the item
+			}
 			gen->addMotif(set);
 			gen->addLocationMotif(i, counter);
 			counter++;

@@ -71,20 +71,21 @@ RuleSet* createRuleSet(const std::string &name, Database* db) {
 
 //This creates the ruleset, but also combines the created ruleset with all of their parents
 RuleSet* combineRuleSetParents(const std::string& name, Database* db) {
-	RuleSet* set = createRuleSet(name, db);
+	RuleSet set = (*createRuleSet(name, db));
 	int location_id = db->getLocationID(name);
 	//-1 in the db signifies no parent
 	while (db->getLocationParent(location_id) > 0) {
 		location_id = db->getLocationParent(location_id);
 		RuleSet* result = createRuleSet(db->getLocation(location_id), db);
 		if (result != NULL) {
-			RuleSet new_set = (*result) + set;
+			//set += (*result);
+			RuleSet new_set =  set + (*result);
 			delete result;
-			delete set;
-			set = new RuleSet(new_set);
+			//delete set;
+			set = new_set;//new RuleSet(new_set);
 		}
 	}
-	return set;
+	return new RuleSet(set);
 }
 
 
@@ -640,7 +641,7 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
 	for (int j = 0; j < recipe->getNumLocations(); j++) {
-		time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
+		time_con = recipe->getLocationAtTime(j, 22, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
 		for (int i = 0; i <200; i++) {
@@ -698,7 +699,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
 	for (int j = 0; j < recipe->getNumLocations(); j++) {
-			time_con = recipe->getLocationAtTime(j, -1, NULL, with_cleanup);
+			time_con = recipe->getLocationAtTime(j, 22, NULL, with_cleanup);
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
  			graph = new GraphComplete(time_con, 0, with_cleanup);
