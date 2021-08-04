@@ -186,8 +186,9 @@ bool NarrativeWorldMold::addTemporialConstraint(int loc_id, double time, RuleSet
 	if (loc_id == -1)
 		return false;
 	//Here, we put in a constraint that we will not add a time point if it doesn't contain anything
-	if (time_point->getNumRules() == 0 && time_point->getNumVertices() == 0)
-		return false;
+	//removing this because there are times the room has nothing in it
+	//if (time_point->getNumRules() == 0 && time_point->getNumVertices() == 0)
+	//	return false;
 	TimeStructure* time_struct = this->getTimeStruct(loc_id);
 	if (time_struct == NULL) {
 		time_struct = this->addTemporialStructure(loc_id);

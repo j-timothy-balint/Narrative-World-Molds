@@ -417,10 +417,10 @@ int main() {
 		}
 	}
 	results.close();*/
-	std::cout << "Full" << std::endl;
-	NarrativeWorldMoldTest(db);
-	std::cout << "No Additional Structure" << std::endl;
-	NarrativeWorldMoldTest(db,false);
+	//std::cout << "Full" << std::endl;
+	//NarrativeWorldMoldTest(db);
+	//std::cout << "No Additional Structure" << std::endl;
+	//NarrativeWorldMoldTest(db,false);
 	//std::cout << "No Additional Time" << std::endl;
 	//NarrativeWorldMoldTest(db, true, false);
 	std::cout << "No Removal of items" << std::endl;

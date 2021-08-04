@@ -638,10 +638,11 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 	std::string saveout;
 	std::ofstream myfile;
 	SamplingConstraint *constraint;
+	double time_point = 50;
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
-	for (int j = 0; j < recipe->getNumLocations(); j++) {
-		time_con = recipe->getLocationAtTime(j, 22, NULL, with_cleanup);
+	for (int j = 4; j < recipe->getNumLocations(); j++) {
+		time_con = recipe->getLocationAtTime(j, time_point, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
 		for (int i = 0; i <200; i++) {
@@ -656,7 +657,7 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 							fail_counter += 1;
 							total_counts++;
 							if (fin != NULL) {
-								if (!recipe->isNarrativeLocation(j, -1, fin)) {
+								if (!recipe->isNarrativeLocation(j, time_point, fin)) {
 									fin = NULL; //No narrative World
 								}
 							}
