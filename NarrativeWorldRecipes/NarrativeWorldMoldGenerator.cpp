@@ -582,6 +582,11 @@ std::map<int, std::set<std::string> > backFowardTrack(std::multimap<int, std::st
 	}
 	for (it = destroyed.begin(); it != destroyed.end(); it++) {
 		time_points.insert((*it).first);
+		//We need the point after destruction to represent that the item isn't there 
+		//but only if it isn't there already
+		if (time_points.find((*it).first + 1) == time_points.end()) {
+			time_points.insert((*it).first + 1);
+		}
 	}
 	//Also add in the time_points -1 and 9999999 (beginning and end)
 	//results[-1] = std::list<std::string>();
