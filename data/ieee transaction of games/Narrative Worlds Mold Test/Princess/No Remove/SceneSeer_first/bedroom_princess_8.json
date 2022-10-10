@@ -1,0 +1,14 @@
+{
+"vertices":[
+{"id":"0","name":"bottle.n.01","Leaves":[],"frequency":1},
+{"id":"1","name":"pot","Leaves":[],"frequency":0.4},
+{"id":"2","name":"floor","Leaves":[],"frequency":0.885117}
+],
+"rules":[
+{"id":"0","source":"1","target":"0","factor":"vertical-support"},
+{"id":"1","source":"2","target":"1","factor":"horizontal-support"}
+],
+"probability":[
+{"id":"0","value":0.1},
+{"id":"1","value":0.0835509}
+]}

@@ -1,0 +1,10 @@
+{
+"vertices":[
+{"id":"0","name":"room","Leaves":[],"frequency":1},
+{"id":"1","name":"floor","Leaves":[],"frequency":1},
+{"id":"2","name":"stuffed_animal","Leaves":[],"frequency":1}
+],
+"rules":[
+],
+"probability":[
+]}

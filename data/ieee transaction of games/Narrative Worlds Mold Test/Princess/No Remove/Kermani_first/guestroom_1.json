@@ -1,0 +1,25 @@
+{
+"vertices":[
+{"id":"0","name":"bed","Leaves":[],"frequency":0.721137},
+{"id":"1","name":"wall","Leaves":[],"frequency":0.819843},
+{"id":"2","name":"room","Leaves":[],"frequency":0.989556},
+{"id":"3","name":"paper","Leaves":[{"name":"money","frequency":1 },{"name":"motherlode","frequency":1 }],"frequency":0.477807},
+{"id":"4","name":"picture","Leaves":[],"frequency":0.553525},
+{"id":"5","name":"floor","Leaves":[],"frequency":0.885117}
+],
+"rules":[
+{"id":"0","source":"1","target":"0","factor":"orientation_parallel"},
+{"id":"1","source":"2","target":"1","factor":"vertical-support"},
+{"id":"2","source":"5","target":"1","factor":"vertical-support"},
+{"id":"3","source":"5","target":"3","factor":"vertical-support"},
+{"id":"4","source":"5","target":"4","factor":"vertical-support"},
+{"id":"5","source":"5","target":"0","factor":"support"}
+],
+"probability":[
+{"id":"0","value":0.136767},
+{"id":"1","value":0.637076},
+{"id":"2","value":0.138381},
+{"id":"3","value":0.114883},
+{"id":"4","value":0.114883},
+{"id":"5","value":0.631854}
+]}

@@ -1,0 +1,14 @@
+{
+"vertices":[
+{"id":"0","name":"garbage_bin","Leaves":[],"frequency":0.3125},
+{"id":"1","name":"floor","Leaves":[],"frequency":0.730769},
+{"id":"2","name":"air_conditioner","Leaves":[],"frequency":0.125}
+],
+"rules":[
+{"id":"0","source":"1","target":"0","factor":"vertical-support"},
+{"id":"1","source":"2","target":"0","factor":"proximity"}
+],
+"probability":[
+{"id":"0","value":0.115385},
+{"id":"1","value":0.0625}
+]}

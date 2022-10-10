@@ -1,0 +1,9 @@
+{
+"vertices":[
+{"id":"0","name":"chessboard","Leaves":[],"frequency":1},
+{"id":"1","name":"paper","Leaves":[],"frequency":1}
+],
+"rules":[
+],
+"probability":[
+]}

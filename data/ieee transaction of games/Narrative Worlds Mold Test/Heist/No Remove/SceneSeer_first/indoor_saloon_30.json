@@ -1,0 +1,15 @@
+{
+"vertices":[
+{"id":"0","name":"wall","Leaves":[],"frequency":0.666667},
+{"id":"1","name":"chessboard","Leaves":[],"frequency":1},
+{"id":"2","name":"paper","Leaves":[],"frequency":1},
+{"id":"3","name":"floor","Leaves":[],"frequency":0.888889}
+],
+"rules":[
+{"id":"0","source":"0","target":"1","factor":"horizontal-support"},
+{"id":"1","source":"3","target":"2","factor":"vertical-support"}
+],
+"probability":[
+{"id":"0","value":0.333333},
+{"id":"1","value":0.114883}
+]}

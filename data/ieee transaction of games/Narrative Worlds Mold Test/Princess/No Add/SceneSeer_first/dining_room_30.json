@@ -1,0 +1,11 @@
+{
+"vertices":[
+{"id":"0","name":"table","Leaves":[],"frequency":1},
+{"id":"1","name":"wall","Leaves":[],"frequency":0.410256}
+],
+"rules":[
+{"id":"0","source":"1","target":"0","factor":"orientation_parallel"}
+],
+"probability":[
+{"id":"0","value":0.269231}
+]}

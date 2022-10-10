@@ -1,0 +1,25 @@
+{
+"vertices":[
+{"id":"0","name":"chair","Leaves":[],"frequency":0.8},
+{"id":"1","name":"stuffed_animal","Leaves":[],"frequency":1},
+{"id":"2","name":"table","Leaves":[],"frequency":0.551282},
+{"id":"3","name":"computer","Leaves":[],"frequency":0.305019},
+{"id":"4","name":"keyboard","Leaves":[{"name":"sixshooter","frequency":1 },{"name":"handcuff","frequency":1 }],"frequency":0.163449},
+{"id":"5","name":"room","Leaves":[],"frequency":0.9995},
+{"id":"6","name":"floor","Leaves":[],"frequency":0.730769},
+{"id":"7","name":"wall","Leaves":[],"frequency":0.615385}
+],
+"rules":[
+{"id":"0","source":"0","target":"1","factor":"vertical-support"},
+{"id":"1","source":"3","target":"4","factor":"proximity"},
+{"id":"2","source":"0","target":"2","factor":"orientation_parallel"},
+{"id":"3","source":"5","target":"7","factor":"vertical-support"},
+{"id":"4","source":"6","target":"0","factor":"vertical-support"}
+],
+"probability":[
+{"id":"0","value":0.2},
+{"id":"1","value":0.0810811},
+{"id":"2","value":0.229086},
+{"id":"3","value":0.102564},
+{"id":"4","value":0.141026}
+]}

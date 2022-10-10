@@ -1,0 +1,8 @@
+{
+"vertices":[
+{"id":"0","name":"keyboard","Leaves":[{"name":"sixshooter","frequency":1 },{"name":"handcuff","frequency":1 }],"frequency":0.163449}
+],
+"rules":[
+],
+"probability":[
+]}

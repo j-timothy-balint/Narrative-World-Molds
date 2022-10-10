@@ -6,8 +6,6 @@ FactorGraph/sqlite3.h
 *.txt
 *.filters
 *.user
-**/heist
-**/princess
 **/x64
 **/.vs
 graph_connections.txt

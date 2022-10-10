@@ -1,0 +1,11 @@
+{
+"vertices":[
+{"id":"0","name":"bottle.n.01","Leaves":[],"frequency":1},
+{"id":"1","name":"pot","Leaves":[],"frequency":0.4}
+],
+"rules":[
+{"id":"0","source":"1","target":"0","factor":"vertical-support"}
+],
+"probability":[
+{"id":"0","value":0.1}
+]}

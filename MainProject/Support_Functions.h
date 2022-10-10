@@ -638,21 +638,21 @@ void narrativeWorldDifferenceTest(const std::string& path, NarrativeWorldMold *r
 	std::string saveout;
 	std::ofstream myfile;
 	SamplingConstraint *constraint;
-	double time_point = 50;
+	double time_point = -1;
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
-	for (int j = 4; j < recipe->getNumLocations(); j++) {
+	for (int j = 0; j < recipe->getNumLocations(); j++) {
 		time_con = recipe->getLocationAtTime(j, time_point, NULL, with_cleanup);
 		int total_failures = 0;
 		int total_counts = 0;
-		for (int i = 0; i <200; i++) {
+		for (int i = 0; i <10; i++) {
 			if (time_con != NULL) {
 				constraint = new SamplingConstraint(10000, time_con,with_cleanup);
 				for (int k = 0; k < 5; k++) {
 					RuleSet *fin = NULL;
 					int fail_counter = 0;
 					if (time_con->getNumRules() > 0) {
-						while (fin == NULL && fail_counter < 1) {
+						while (fin == NULL && fail_counter < 100) {
 							fin = constraint->sampleConstraints(5 + k);
 							fail_counter += 1;
 							total_counts++;
@@ -699,8 +699,9 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 	GraphComplete *graph;
 	char path_files[500];//Gives us the actual name of it
 	RuleSet* time_con;
+	double time_check = -1;
 	for (int j = 0; j < recipe->getNumLocations(); j++) {
-			time_con = recipe->getLocationAtTime(j, 22, NULL, with_cleanup);
+			time_con = recipe->getLocationAtTime(j, time_check, NULL, with_cleanup);
 			std::list<Vertex*> narrative_objects;
 			std::list<Vertex*> end_objects;
  			graph = new GraphComplete(time_con, 0, with_cleanup);
@@ -728,7 +729,7 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 			if (end_objects.size() != 0) {
 				int total_failures = 0;
 				int total_counts = 0;
-				for (int i = 0; i < 200; i++) {
+				for (int i = 0; i < 10; i++) {
 					if (time_con != NULL) {
 						
 						//constraint = new SamplingConstraint(10000, time_con, with_cleanup);
@@ -736,12 +737,12 @@ void narrativeWorldDifferenceTestGraph(const std::string& path, NarrativeWorldMo
 							RuleSet* fin = NULL;
 							int fail_counter = 0;
 							if (time_con->getNumRules() > 0) {
-								while (fin == NULL && fail_counter < 1) {
+								while (fin == NULL && fail_counter < 100) {
 									fin = graph->completeGraph(narrative_objects, end_objects);
 									fail_counter += 1;
 									total_counts++;
 									if (fin != NULL) {
-										if (!recipe->isNarrativeLocation(j, -1, fin)) {
+										if (!recipe->isNarrativeLocation(j, time_check, fin)) {
 											fin = NULL; //No narrative World
 										}
 									}

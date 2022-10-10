@@ -313,25 +313,25 @@ void NarrativeWorldMoldTest(Database *db, bool with_addition = true, bool with_t
 	//myfile << saveout;
 	//myfile.close(); 
 	if (with_addition && with_temporial && with_cleanup) {
-		narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani\\", recipe, gen,db,with_cleanup);
-		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\SceneSeer\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTest("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\Kermani_first\\", recipe, gen,db,with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\Full\\SceneSeer_first\\", recipe, gen, db, with_cleanup);
 	}
 	else if (!with_addition) {
-		narrativeWorldDifferenceTest("E:\\Generated Data\\NarrativeWorldMoldTest\\heist\\No Add\\Kermani\\", recipe, gen, db, with_cleanup);
-		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Add\\SceneSeer\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTest(     "E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Add\\Kermani_first\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Add\\SceneSeer_first\\", recipe, gen, db, with_cleanup);
 	}
-	else if (!with_temporial){
-		narrativeWorldDifferenceTest("E:\\Generated Data\\NarrativeWorldMoldTest\\heist\\No Time\\Kermani\\", recipe, gen, db, with_cleanup);
-		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Time\\SceneSeer\\", recipe, gen, db, with_cleanup);
+	/*else if (!with_temporial){
+		narrativeWorldDifferenceTest("E:\\Generated Data\\NarrativeWorldMoldTest\\heist\\No Time\\Kermani_first\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Time\\SceneSeer_first\\", recipe, gen, db, with_cleanup);
 	}
 	else if (motif_only) {
-		narrativeWorldDifferenceTest("C:\\Users\\timmy\\Documents\\Computer Science\\Narrative World\\MotifCreation\\FactorGraph\\MainProject\\Kermani\\", recipe, gen, db, with_cleanup);
-		narrativeWorldDifferenceTestGraph("C:\\Users\\timmy\\Documents\\Computer Science\\Narrative World\\MotifCreation\\FactorGraph\\MainProject\\SceneSeer\\", recipe, gen, db, with_cleanup);
-	}
+		narrativeWorldDifferenceTest("C:\\Users\\timmy\\Documents\\Computer Science\\Narrative World\\MotifCreation\\FactorGraph\\MainProject\\Kermani_first\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTestGraph("C:\\Users\\timmy\\Documents\\Computer Science\\Narrative World\\MotifCreation\\FactorGraph\\MainProject\\SceneSeer_first\\", recipe, gen, db, with_cleanup);
+	}*/
 	else {
 		//std::cout << "Cleanup toggle is " << with_cleanup << std::endl;
-		narrativeWorldDifferenceTest("D:\\Narrative World\\NarrativeWorldMoldTest\\princess\\No Remove\\", recipe, gen, db, with_cleanup);
-		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Remove\\SceneSeer\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTest(     "E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Remove\\Kermani_first\\", recipe, gen, db, with_cleanup);
+		narrativeWorldDifferenceTestGraph("E:\\Generated Data\\Narrative Worlds Mold Test\\Heist\\No Remove\\SceneSeer_first\\", recipe, gen, db, with_cleanup);
 	}
 	delete gen;
 	db->cleanObjects();
@@ -417,10 +417,10 @@ int main() {
 		}
 	}
 	results.close();*/
-	//std::cout << "Full" << std::endl;
-	//NarrativeWorldMoldTest(db);
-	//std::cout << "No Additional Structure" << std::endl;
-	//NarrativeWorldMoldTest(db,false);
+	std::cout << "Full" << std::endl;
+	NarrativeWorldMoldTest(db);
+	std::cout << "No Additional Structure" << std::endl;
+	NarrativeWorldMoldTest(db,false);
 	//std::cout << "No Additional Time" << std::endl;
 	//NarrativeWorldMoldTest(db, true, false);
 	std::cout << "No Removal of items" << std::endl;
