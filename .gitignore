@@ -2,8 +2,6 @@
 *.sql
 FactorGraph/sqlite3.c
 FactorGraph/sqlite3.h
-*.db
-*.txt
 *.filters
 *.user
 **/x64
